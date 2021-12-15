@@ -1,0 +1,7 @@
+ihmelhorenvio_configuration:
+    path: ihmelhorenvio/configuration
+    methods: [GET, POST]
+    defaults:
+        _controller: 'IhMelhorEnvio\Controller\Admin\AdminIhMelhorEnvioController::configurationAction'
+        _legacy_controller: "AdminIhMelhorEnvioController"
+        _legacy_link: "testConfiguration"

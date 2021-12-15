@@ -1,0 +1,41 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %} {% block content %}
+
+{% if resultHandleForm != null %}
+<div class="alert alert-success">Settings updated!</div>
+{% endif %}
+
+{% if resultTestConfiguration is same as(true) %}
+	<div class="alert alert-success">Configurations OK!</div>
+{% elseif resultTestConfiguration != null %}
+	<div class="alert alert-danger">Something is wrong!
+	<br /><br />Error: {{resultTestConfiguration|raw}}</div>
+{% endif %}
+
+{{ form_start(configurationForm) }}
+<div class="row justify-content-center">
+	<div class="col-xl-10">
+		<div class="card">
+			<h3 class="card-header">
+			</h3>
+
+			<div class="card-block row ">
+				<div class="card-text justify-content-center">
+					{{ form_row(configurationForm.IHMELHOR_ENVIO_API_KEY_PROD) }}
+					{{ form_row(configurationForm.IHMELHOR_ENVIO_API_KEY_SANDBOX) }}
+					{{ form_row(configurationForm.IHMELHOR_ENVIO_SERVICES_ENABLED) }}
+					{{ form_row(configurationForm.IHMELHOR_ENVIO_API_ENVIRONMENT)}}
+				</div>
+			</div>
+
+			<div class="card-footer">
+				<div class="d-flex justify-content-between">
+					{{ form_widget(configurationForm.btnTestConfiguration) }}
+					{{ form_widget(configurationForm.btnSaveConfiguration) }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{{ form_end(configurationForm) }}
+
+{% endblock %}
