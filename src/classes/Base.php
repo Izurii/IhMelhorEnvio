@@ -5,23 +5,20 @@ namespace IhMelhorEnvio\Classes;
 use AddressCore;
 use CarrierCore;
 use Cart;
-use Context;
-use ContextCore;
 use Db;
 use GroupCore;
-use IhMelhorEnvio as GlobalIhMelhorEnvio;
+use IhMelhorEnvio;
 use IhMelhorEnvio\Assets\CarrierConfigs;
 use LanguageCore;
 use MelhorEnvio\Enums\Environment;
 use MelhorEnvio\Resources\Shipment\Product;
 use MelhorEnvio\Shipment;
-use PrestaShop\PrestaShop\Core\Domain\Cart\QueryResult\CartForOrderCreation\CartProduct;
 use ProductCore;
 use RangePriceCore;
 use RangeWeightCore;
 use ShopCore;
 
-class IhMelhorEnvio
+class Base
 {
 
 	public static function getShippingRates(Cart $params, int $service)
@@ -29,17 +26,31 @@ class IhMelhorEnvio
 		$shop = new ShopCore(null, null, $params->id_shop);
 		$fromCep = str_replace('-', '', $shop->getAddress()->postcode);
 
+		if (empty($fromCep) || $fromCep == null || $fromCep == '') {
+			return false;
+		}
+
 		$toAddress = new AddressCore($params->id_address_delivery);
 		$toCep = str_replace('-', '', $toAddress->postcode);
 
-		$environment = ModuleConfiguration::getEnvironment();
+		if (empty($toCep) || $toCep == null || $toCep == '') {
+			return false;
+		}
+		if (empty($toAddress) || $toAddress == null || $toAddress == '') {
+			return false;
+		}
+
+		$environment = BaseConfiguration::getEnvironment();
 		$token = '';
 
 		if ($environment == Environment::PRODUCTION)
-			$token = ModuleConfiguration::getProductionApiKey();
+			$token = BaseConfiguration::getProductionApiKey();
 		else
-			$token = ModuleConfiguration::getSandboxApiKey();
+			$token = BaseConfiguration::getSandboxApiKey();
 
+		if (empty($token) || $token == null || $token == '') {
+			return false;
+		}
 
 		$shipment = new Shipment($token, $environment);
 		$calculator = $shipment->calculator();
@@ -83,7 +94,7 @@ class IhMelhorEnvio
 		$carrierConfig = CarrierConfigs::getCarrierConfig($carrierId);
 
 		$carrier->name = $carrierConfig->name;
-		$carrier->external_module_name = GlobalIhMelhorEnvio::MODULE_NAME;
+		$carrier->external_module_name = IhMelhorEnvio::MODULE_NAME;
 		// $carrier->is_module = true;
 		$carrier->max_weight = $carrierConfig->max_weight;
 		$carrier->max_width = $carrierConfig->max_width;
@@ -152,7 +163,7 @@ class IhMelhorEnvio
 
 		$logoName = $carrierConfig->logo;
 		if (!copy(
-			_PS_MODULE_DIR_ . GlobalIhMelhorEnvio::MODULE_NAME . '/logos/' . $logoName,
+			_PS_MODULE_DIR_ . IhMelhorEnvio::MODULE_NAME . '/logos/' . $logoName,
 			_PS_SHIP_IMG_DIR_ . $carrier->id . '.jpg'
 		))
 			return false;

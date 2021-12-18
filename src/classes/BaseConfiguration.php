@@ -3,13 +3,9 @@
 namespace IhMelhorEnvio\Classes;
 
 use ConfigurationCore;
-use Db;
-use Error;
 use Exception;
-use MelhorEnvio\Enums\Environment;
-use MelhorEnvio\Enums\Service;
 
-class ModuleConfiguration
+class BaseConfiguration
 {
 
 	public const API_ENVIRONMENT = 'IHMELHOR_ENVIO_API_ENVIRONMENT';
@@ -68,7 +64,7 @@ class ModuleConfiguration
 
 		$carriers = self::getCarriers();
 		foreach ($servicesAdded as $service) {
-			if (!($carrierId = IhMelhorEnvio::installCarrier($service))) {
+			if (!($carrierId = Base::installCarrier($service))) {
 				throw new Exception('Error installing carrier ' . $service);
 			}
 			$carriers[] = [$service, $carrierId];
@@ -83,7 +79,7 @@ class ModuleConfiguration
 			$carrierId = $carriers[$carrierIdx][1];
 			array_splice($carriers, $carrierIdx, 1);
 
-			if (!IhMelhorEnvio::uninstallCarrier($carrierId)) {
+			if (!Base::uninstallCarrier($carrierId)) {
 				throw new Exception('Error uninstalling carrier ' . $service);
 			}
 		}
