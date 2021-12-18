@@ -2,17 +2,16 @@
 
 namespace IhMelhorEnvio\Controller\Admin;
 
-use IhMelhorEnvio;
-use IhMelhorEnvio\Classes\ModuleConfiguration;
+use ContextCore;
+use IhMelhorEnvio\Classes\BaseConfiguration;
 use IhMelhorEnvio\Forms\ConfigurationType;
 use MelhorEnvio\Enums\Environment;
 use MelhorEnvio\Resources\Shipment\Product;
 use MelhorEnvio\Shipment;
 use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
+use ShopCore;
 use Symfony\Component\Form\ClickableInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class AdminIhMelhorEnvioController extends FrameworkBundleAdminController
 {
@@ -23,7 +22,7 @@ class AdminIhMelhorEnvioController extends FrameworkBundleAdminController
 
 	public function configurationAction(Request $request)
 	{
-		$data = $this->getModuleConfigurationData();
+		$data = $this->getBaseConfigurationData();
 		$configurationForm = $this->createForm(ConfigurationType::class, $data);
 		$configurationForm->handleRequest($request);
 
@@ -55,46 +54,64 @@ class AdminIhMelhorEnvioController extends FrameworkBundleAdminController
 
 		$result = true;
 
-		$result &= ModuleConfiguration::setProductionApiKey($data[ModuleConfiguration::API_PROD_KEY]);
-		$result &= ModuleConfiguration::setSandboxApiKey($data[ModuleConfiguration::API_SANDBOX_KEY]);
+		$result &= BaseConfiguration::setProductionApiKey($data[BaseConfiguration::API_PROD_KEY]);
+		$result &= BaseConfiguration::setSandboxApiKey($data[BaseConfiguration::API_SANDBOX_KEY]);
 
-		if ($data[ModuleConfiguration::API_ENVIRONMENT]) {
-			$result &= ModuleConfiguration::setEnvironment(Environment::PRODUCTION);
+		if ($data[BaseConfiguration::API_ENVIRONMENT]) {
+			$result &= BaseConfiguration::setEnvironment(Environment::PRODUCTION);
 		} else {
-			$result &= ModuleConfiguration::setEnvironment(Environment::SANDBOX);
+			$result &= BaseConfiguration::setEnvironment(Environment::SANDBOX);
 		}
 
-		$result &= ModuleConfiguration::setServicesEnabled($data[ModuleConfiguration::SERVICES_ENABLED]);
+		$result &= BaseConfiguration::setServicesEnabled($data[BaseConfiguration::SERVICES_ENABLED]);
 
 		return $result;
 	}
 
-	public function getModuleConfigurationData()
+	public function getBaseConfigurationData()
 	{
 
-		$configEnvironment = ModuleConfiguration::getEnvironment();
+		$configEnvironment = BaseConfiguration::getEnvironment();
 		$environment = $configEnvironment === Environment::PRODUCTION ? true : false;
 
 		return [
-			ModuleConfiguration::API_PROD_KEY => ModuleConfiguration::getProductionApiKey(),
-			ModuleConfiguration::API_SANDBOX_KEY => ModuleConfiguration::getSandboxApiKey(),
-			ModuleConfiguration::API_ENVIRONMENT => $environment,
-			ModuleConfiguration::SERVICES_ENABLED => ModuleConfiguration::getServicesEnabled()
+			BaseConfiguration::API_PROD_KEY => BaseConfiguration::getProductionApiKey(),
+			BaseConfiguration::API_SANDBOX_KEY => BaseConfiguration::getSandboxApiKey(),
+			BaseConfiguration::API_ENVIRONMENT => $environment,
+			BaseConfiguration::SERVICES_ENABLED => BaseConfiguration::getServicesEnabled()
 		];
 	}
 
 	public function testConfiguration()
 	{
 
-		if (ModuleConfiguration::getEnvironment() === Environment::SANDBOX) {
+		$context = ContextCore::getContext();
+		$shop = new ShopCore(null, null, $context->shop->id);
+		$fromCep = str_replace('-', '', $shop->getAddress()->postcode);
+
+		if ($fromCep == '' || $fromCep == null || empty($fromCep)) {
+			return 'You need to set a valid postal code in your shop address';
+		}
+
+		if (BaseConfiguration::getEnvironment() === Environment::SANDBOX) {
 
 			try {
 
-				$shipment = new Shipment(ModuleConfiguration::getSandboxApiKey(), Environment::SANDBOX);
+				$sandBoxApiKey = BaseConfiguration::getSandboxApiKey();
+
+				if (
+					$sandBoxApiKey == ''
+					|| $sandBoxApiKey == null
+					|| empty($sandBoxApiKey)
+				) {
+					return 'You need to set a valid Sandbox API Key';
+				}
+
+				$shipment = new Shipment($sandBoxApiKey, Environment::SANDBOX);
 
 				$calculator = $shipment->calculator();
 
-				$calculator->postalCode('01010010', '20271130');
+				$calculator->postalCode($fromCep, '03112030');
 				$calculator->addProducts(
 					new Product(uniqid(), 40, 30, 50, 10.00, 100.0, 1),
 					new Product(uniqid(), 5, 1, 10, 0.1, 50.0, 1)
@@ -114,11 +131,21 @@ class AdminIhMelhorEnvioController extends FrameworkBundleAdminController
 
 			try {
 
-				$shipment = new Shipment(ModuleConfiguration::getProductionApiKey(), Environment::PRODUCTION);
+				$productionApiKey = BaseConfiguration::getProductionApiKey();
+
+				if (
+					$productionApiKey == ''
+					|| $productionApiKey == null
+					|| empty($productionApiKey)
+				) {
+					return 'You need to set a valid Production API Key';
+				}
+
+				$shipment = new Shipment($productionApiKey, Environment::PRODUCTION);
 
 				$calculator = $shipment->calculator();
 
-				$calculator->postalCode('01010010', '20271130');
+				$calculator->postalCode($fromCep, '03112030');
 
 				$calculator->addProducts(
 					new Product(uniqid(), 40, 30, 50, 10.00, 100.0, 1),
