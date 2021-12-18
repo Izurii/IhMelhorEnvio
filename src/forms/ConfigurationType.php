@@ -2,7 +2,7 @@
 
 namespace IhMelhorEnvio\Forms;
 
-use IhMelhorEnvio\Classes\ModuleConfiguration;
+use IhMelhorEnvio\Classes\BaseConfiguration;
 use MelhorEnvio\Enums\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
@@ -34,22 +34,22 @@ class ConfigurationType extends AbstractType
 
 	public function buildForm(FormBuilderInterface $builder, array $options)
 	{
-		$builder->add(ModuleConfiguration::API_ENVIRONMENT, CheckboxType::class, [
+		$builder->add(BaseConfiguration::API_ENVIRONMENT, CheckboxType::class, [
 			'label' => 'Use production API',
 			'attr' => [
 				'class' => 'align-items-center'
 			],
 			'required' => false,
 		]);
-		$builder->add(ModuleConfiguration::API_PROD_KEY, TextType::class, [
+		$builder->add(BaseConfiguration::API_PROD_KEY, TextType::class, [
 			'label' => 'API Production Key',
 			'required' => true,
 		]);
-		$builder->add(ModuleConfiguration::API_SANDBOX_KEY, TextType::class, [
+		$builder->add(BaseConfiguration::API_SANDBOX_KEY, TextType::class, [
 			'label' => 'API Sandbox Key',
 			'required' => true,
 		]);
-		$builder->add(ModuleConfiguration::SERVICES_ENABLED, ChoiceType::class, [
+		$builder->add(BaseConfiguration::SERVICES_ENABLED, ChoiceType::class, [
 			'label' => 'Services',
 			'multiple' => true,
 			'expanded' => true,

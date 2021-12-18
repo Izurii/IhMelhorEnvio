@@ -1,7 +1,7 @@
 <?php
 
 use IhMelhorEnvio\Classes\IhMelhorEnvio as ClassesIhMelhorEnvio;
-use IhMelhorEnvio\Classes\ModuleConfiguration;
+use IhMelhorEnvio\Classes\BaseConfiguration;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 
 if (!defined('_PS_VERSION_')) {
@@ -78,7 +78,7 @@ class IhMelhorEnvio extends CarrierModuleCore
 	{
 		$id_carrier_old = (int) $params['id_carrier'];
 		$id_carrier_new = (int) $params['carrier']->id;
-		ModuleConfiguration::updateCarrierId($id_carrier_old, $id_carrier_new);
+		BaseConfiguration::updateCarrierId($id_carrier_old, $id_carrier_new);
 	}
 
 	/**
@@ -89,7 +89,7 @@ class IhMelhorEnvio extends CarrierModuleCore
 	 */
 	public function getOrderShippingCost($params, $shipping_cost)
 	{
-		$carriers = ModuleConfiguration::getCarriers();
+		$carriers = BaseConfiguration::getCarriers();
 		$serviceIdx = array_search(
 			$this->id_carrier,
 			array_map(fn ($carrier) => $carrier[1], $carriers)
