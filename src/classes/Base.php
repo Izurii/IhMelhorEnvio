@@ -90,9 +90,12 @@ class Base
 		}
 
 		$calculator->addService($service);
+		$result = $calculator->calculate();
+
+		if (!$result) return false;
+
 		$response = json_decode(
-			$calculator
-				->calculate()
+			$result
 				->getBody()
 				->getContents()
 		);
@@ -100,7 +103,6 @@ class Base
 		if (property_exists($response, 'error')) {
 			return false;
 		}
-
 		return $response->price;
 	}
 

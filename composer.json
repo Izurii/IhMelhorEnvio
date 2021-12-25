@@ -1,37 +1,36 @@
 {
-  "name": "izurii/melhorenvio",
-  "description": "<module description>",
-  "authors": [
-    {
-      "name": "Heitor Massarente",
-      "email": "heitor_massarente@msn.com"
-    }
-  ],
-  "require": {
-    "guzzlehttp/guzzle": "^7.2",
-    "izurii/shipment-sdk-php": "^2.0.1"
-  },
-  "require-dev": {
-    "symfony/symfony": "^3.4.37"
-  },
-  "autoload": {
-    "psr-4": {
-      "IhMelhorEnvio\\": "src/"
-    },
-    "classmap": [
-      "ihmelhorenvio.php",
-      "src/"
-    ]
-  },
-  "config": {
-    "preferred-install": "dist",
-    "prepend-autoloader": false
-  },
-  "type": "prestashop-module",
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/Izurii/shipment-sdk-php.git"
-    }
-  ]
+	"name": "izurii/melhorenvio",
+	"description": "<module description>",
+	"authors": [
+		{
+			"name": "Heitor Massarente",
+			"email": "heitor_massarente@msn.com"
+		}
+	],
+	"require": {
+		"melhorenvio/shipment-sdk-php": "^2.0"
+	},
+	"require-dev": {
+		"symfony/symfony": "^3.4.37"
+	},
+	"autoload": {
+		"psr-4": {
+			"IhMelhorEnvio\\": "src/"
+		},
+		"classmap": [
+			"ihmelhorenvio.php",
+			"src/"
+		]
+	},
+	"config": {
+		"preferred-install": "dist",
+		"prepend-autoloader": false
+	},
+	"type": "prestashop-module",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/Izurii/shipment-sdk-php.git"
+		}
+	]
 }
