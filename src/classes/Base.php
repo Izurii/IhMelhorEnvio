@@ -17,6 +17,7 @@ use ProductCore;
 use RangePriceCore;
 use RangeWeightCore;
 use ShopCore;
+use stdClass;
 
 class Base
 {
@@ -66,10 +67,18 @@ class Base
 					|| !isset($product['width'])
 					|| !isset($product['depth'])
 					|| !isset($product['weight'])
-					|| !isset($product['price'])
-					|| !isset($product['cart_quantity'])
 				) {
 					throw new \Exception('Product dimensions not found');
+					break;
+				}
+
+				if (!isset($product['price'])) {
+					throw new \Exception('Product price not found');
+					break;
+				}
+
+				if (!isset($product['cart_quantity'])) {
+					throw new \Exception('Product quantity not found');
 					break;
 				}
 
@@ -100,10 +109,20 @@ class Base
 				->getContents()
 		);
 
-		if (property_exists($response, 'error')) {
+		if (
+			($response instanceof stdClass && property_exists($response, 'error'))
+			|| (!$response instanceof stdClass && array_key_exists('error', $response))
+		) {
 			return false;
 		}
-		return $response->price;
+
+		if (
+			($response instanceof stdClass && !property_exists($response, 'price'))
+			|| (!$response instanceof stdClass && !array_key_exists('price', $response))
+		) {
+			return false;
+		}
+		return $response instanceof stdClass ? $response->price : $response['price'];
 	}
 
 	public static function installCarrier($carrierId)

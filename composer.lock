@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "75cf03123cca8679171772ca6367e8f7",
+    "content-hash": "4b6eca56eed3cc34cdd307704259d717",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -272,22 +272,22 @@
             "time": "2021-10-05T13:56:00+00:00"
         },
         {
-            "name": "melhorenvio/shipment-sdk-php",
-            "version": "2.0.0",
+            "name": "izurii/shipment-sdk-php",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/melhorenvio/shipment-sdk-php.git",
-                "reference": "a039e58e4b68f32e819e546bc861c160b14e7883"
+                "url": "https://github.com/Izurii/shipment-sdk-php.git",
+                "reference": "bab51356ab514845e6e8f69400ad18e45e860b09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/melhorenvio/shipment-sdk-php/zipball/a039e58e4b68f32e819e546bc861c160b14e7883",
-                "reference": "a039e58e4b68f32e819e546bc861c160b14e7883",
+                "url": "https://api.github.com/repos/Izurii/shipment-sdk-php/zipball/bab51356ab514845e6e8f69400ad18e45e860b09",
+                "reference": "bab51356ab514845e6e8f69400ad18e45e860b09",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "guzzlehttp/guzzle": "^6.5",
+                "guzzlehttp/guzzle": "6.*",
                 "php": "7.4.*",
                 "symfony/polyfill-php74": "^1.23"
             },
@@ -300,7 +300,19 @@
                     "MelhorEnvio\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "MelhorEnvio\\Tests\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/phpunit"
+                ],
+                "test-coverage": [
+                    "vendor/bin/phpunit --coverage-html coverage"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -312,16 +324,15 @@
                 }
             ],
             "description": "Este pacote é responsável por realizar o cálculo de cotações.",
-            "homepage": "https://github.com/melhorenvio/shipment-sdk-php",
+            "homepage": "https://github.com/Izurii/shipment-sdk-php",
             "keywords": [
                 "melhorenvio",
                 "shipment-sdk-php"
             ],
             "support": {
-                "issues": "https://github.com/melhorenvio/shipment-sdk-php/issues",
-                "source": "https://github.com/melhorenvio/shipment-sdk-php/tree/2.0.0"
+                "source": "https://github.com/Izurii/shipment-sdk-php/tree/2.0.2"
             },
-            "time": "2021-11-17T18:20:31+00:00"
+            "time": "2021-12-25T17:53:18+00:00"
         },
         {
             "name": "psr/http-message",
@@ -2574,5 +2585,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }
