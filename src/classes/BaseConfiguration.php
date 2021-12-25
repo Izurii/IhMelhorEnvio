@@ -127,11 +127,14 @@ class BaseConfiguration
 	public static function removeCarrier($carrierId)
 	{
 		$carriers = self::getCarriers();
+		$servicesEnabled = self::getServicesEnabled();
+
 		foreach ($carriers as $key => $carrier) {
 			if ($carrier[1] == $carrierId) {
 				unset($carriers[$key]);
+				unset($servicesEnabled[array_search($carrier[0], $servicesEnabled)]);
 			}
 		}
-		return self::setCarriers($carriers);
+		return self::setCarriers($carriers) && self::setServicesEnabled($servicesEnabled);
 	}
 }

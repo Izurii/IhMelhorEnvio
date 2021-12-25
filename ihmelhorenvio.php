@@ -1,6 +1,6 @@
 <?php
 
-use IhMelhorEnvio\Classes\IhMelhorEnvio as ClassesIhMelhorEnvio;
+use IhMelhorEnvio\Classes\Base;
 use IhMelhorEnvio\Classes\BaseConfiguration;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 
@@ -45,6 +45,7 @@ class IhMelhorEnvio extends CarrierModuleCore
 		if (
 			!parent::install()
 			|| !$this->registerHook('actionCarrierUpdate')
+			|| !$this->registerHook('actionAdminCarriersControllerDeleteAfter')
 		) {
 			return false;
 		}
@@ -53,7 +54,16 @@ class IhMelhorEnvio extends CarrierModuleCore
 
 	public function uninstall()
 	{
-		if (!parent::uninstall()) {
+		if (
+			!parent::uninstall()
+			|| !ConfigurationCore::deleteByName(BaseConfiguration::API_ENVIRONMENT)
+			|| !ConfigurationCore::deleteByName(BaseConfiguration::API_SANDBOX_KEY)
+			|| !ConfigurationCore::deleteByName(BaseConfiguration::API_PROD_KEY)
+			|| !ConfigurationCore::deleteByName(BaseConfiguration::SERVICES_ENABLED)
+			|| !ConfigurationCore::deleteByName(BaseConfiguration::MODULE_CARRIERS)
+			|| !$this->unregisterHook('actionCarrierUpdate')
+			|| !$this->unregisterHook('actionAdminCarriersControllerDeleteAfter')
+		) {
 			return false;
 		}
 		return true;
@@ -61,10 +71,7 @@ class IhMelhorEnvio extends CarrierModuleCore
 
 	public function reset()
 	{
-		if (!parent::uninstall())
-			return false;
-		if (!parent::install())
-			return false;
+		return $this->uninstall() && $this->install();
 	}
 
 	public function getContent()
@@ -81,6 +88,12 @@ class IhMelhorEnvio extends CarrierModuleCore
 		BaseConfiguration::updateCarrierId($id_carrier_old, $id_carrier_new);
 	}
 
+	public function hookActionAdminCarriersControllerDeleteAfter($params)
+	{
+		$carrier_id = $params['return']->id;
+		BaseConfiguration::removeCarrier($carrier_id);
+	}
+
 	/**
 	 *
 	 * @param Cart $params
@@ -95,7 +108,7 @@ class IhMelhorEnvio extends CarrierModuleCore
 			array_map(fn ($carrier) => $carrier[1], $carriers)
 		);
 		$service = (int) $carriers[$serviceIdx][0];
-		return ClassesIhMelhorEnvio::getShippingRates($params, $service);
+		return Base::getShippingRates($params, $service);
 	}
 
 	/**

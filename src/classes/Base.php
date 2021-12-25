@@ -57,19 +57,36 @@ class Base
 
 		$calculator->postalCode($fromCep, $toCep);
 
-		/** @var ProductCore */
-		foreach ($params->getProducts() as $product) {
-			$calculator->addProduct(
-				new Product(
-					uniqid(),
-					$product['height'],
-					$product['width'],
-					$product['depth'],
-					$product['weight'],
-					$product['price'],
-					$product['cart_quantity']
-				)
-			);
+		try {
+			/** @var ProductCore */
+			foreach ($params->getProducts() as $product) {
+
+				if (
+					!isset($product['height'])
+					|| !isset($product['width'])
+					|| !isset($product['depth'])
+					|| !isset($product['weight'])
+					|| !isset($product['price'])
+					|| !isset($product['cart_quantity'])
+				) {
+					throw new \Exception('Product dimensions not found');
+					break;
+				}
+
+				$calculator->addProduct(
+					new Product(
+						uniqid(),
+						$product['height'],
+						$product['width'],
+						$product['depth'],
+						$product['weight'],
+						$product['price'],
+						$product['cart_quantity']
+					)
+				);
+			}
+		} catch (\Exception $e) {
+			return false;
 		}
 
 		$calculator->addService($service);
